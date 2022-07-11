@@ -4,7 +4,7 @@ version: v1.0
 # Name your pipeline. In case you connect multiple pipelines with promotions,
 # the name will help you differentiate between, for example, a CI build phase
 # and delivery phases.
-name: Semaphore PHP Example Pipeline
+name: Future-Laravel App Pipeline
 
 # An agent defines the environment in which your code runs.
 # It is a combination of one of available machine types and operating
@@ -24,6 +24,7 @@ global_job_config:
 # Blocks are the heart of a pipeline and are executed sequentially.
 # Each block has a task that defines one or more jobs. Jobs define the
 # commands to execute.
+# Each block and even job starts in a fresh, isolated environment.
 # See https://docs.semaphoreci.com/article/62-concepts
 blocks:
   - name: "Install Dependencies"
@@ -50,8 +51,9 @@ blocks:
             - npm install
             # Store the /vendor and node_modules folders into cache for later use.
             - cache store
-            # We are setting up the .env file from our example file which contains Semaphore DB data and proper app URL
-            - cp .env.example .env
+            # Use Semaphore-tailored .env.testing file
+            # You may need to set up different app and DB ports, for example.
+            - cp .env.testing.semaphoreci .env.testing
             # We need to generate an application key for Laravel to work.
             - php artisan key:generate
 
@@ -76,10 +78,17 @@ blocks:
           commands:
             # Run the PHP Copy Paste Detector from online repository.
             - curl -L https://phar.phpunit.de/phpcpd.phar -o phpcpd.phar
-            - php phpcpd.phar app/ --min-lines=50
+            - php phpcpd.phar app/ --min-lines=10
 
   - name: "Run Unit tests"
     task:
+      env_vars:
+        - name: DB_NAME
+          value: "testing"
+        - name: DB_UNAME
+          value: "future"
+        - name: DB_UPASS
+          value: "password"    
       jobs:
       - name: phpunit
         commands:
@@ -87,7 +96,22 @@ blocks:
           - cache restore
           - composer install
           - npm install
-          # Run the unit tests from the phpunit binary in vendor folder
+          # Use Semaphore-tailored .env.testing file
+          # You may need to set up different app and DB ports, for example.
+          - cp .env.testing.semaphoreci .env.testing
+          # Create and seed DB.
+          # Each Semaphore job starts in a fresh, isolated environment.
+          # You have to recreate and reseed DB each time.
+          # DBMS runs at 0.0.0.0, listens it's default port
+          - sem-service start postgres 14
+          - sudo apt-get install -y -qq postgresql-client
+          - createdb -U postgres -h localhost $DB_NAME
+          - psql -h localhost -U postgres -c "\l" | grep $DB_NAME
+          - sem-service status postgres
+          - psql -U postgres -h localhost -c "CREATE USER future WITH PASSWORD 'password';"
+          - psql -U postgres -h localhost -c "ALTER USER future WITH SUPERUSER;"
+          - php artisan migrate --env=testing
+          # Run unit and feature tests from the phpunit binary in vendor folder
           - ./vendor/bin/phpunit
 
   - name: "Run Security Tests"
