@@ -27,7 +27,7 @@ class UserTest extends TestCase
         $response = $this->withHeaders([
             'X-Requested-With' => 'XMLHttpRequest',
             'Accept' => 'application/json',
-        ])->post('http://localhost/api/v1/register', [
+        ])->post('/api/v1/register', [
             'name' => $faker->name,
             'email' => $faker->unique()->freeEmail,
             'password' => 'DfBBBnMMl23DwerT',
