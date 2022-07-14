@@ -23,12 +23,10 @@ Route::group([
     Route::post('/register', [AuthController::class, 'register']);
     // Log user in
     Route::post('/login', [AuthController::class, 'login']);
-    // Get all entries
-    Route::get('/notebook', [NotebookController::class, 'index']);
     // Get particular entry
     Route::get('/notebook/{id}', [NotebookController::class, 'show']);
-    // Search entries by name
-    Route::get('/notebook/search/{name}', [NotebookController::class, 'search']);
+    // Get all entries
+    Route::get('/notebook', [NotebookController::class, 'index']);
 });
 
 //Protected routes
@@ -36,10 +34,10 @@ Route::group([
     'prefix' => 'v1',
     'middleware' => ['auth:sanctum']
 ], function () {
-    // Add entry
-    Route::post('/notebook', [NotebookController::class, 'add']);
     // Modify entry
     Route::post('/notebook/{id}', [NotebookController::class, 'update']);
+    // Add entry
+    Route::post('/notebook', [NotebookController::class, 'add']);
     // Delete entry
     Route::delete('/notebook/{id}', [NotebookController::class, 'destroy']);
     // Log user out

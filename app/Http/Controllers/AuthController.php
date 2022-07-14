@@ -15,6 +15,9 @@ class AuthController extends Controller
 {
     /**
      * User registration
+     *
+     * @param \Illuminate\Http\Request
+     * @return \Illuminate\Http\Response
      */
     public function register(Request $request)
     {
@@ -40,6 +43,7 @@ class AuthController extends Controller
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
+            'id' => $user->id,
             'access_token' => $token,
             'token_type' => 'Bearer',
             'message' => 'Successful registration.'
@@ -48,6 +52,9 @@ class AuthController extends Controller
 
     /**
      * User login
+     *
+     * @param \Illuminate\Http\Request
+     * @return \Illuminate\Http\Response
      */
     public function login(Request $request)
     {
@@ -76,7 +83,7 @@ class AuthController extends Controller
             'access_token' => $token,
             'token_type' => 'Bearer',
             'message' => 'Successfull login.'
-        ]);
+        ], 200);
     }
 
     /**
@@ -84,6 +91,9 @@ class AuthController extends Controller
      *
      * Only current token will be deleted, other user-associated tokens will persist.
      * It is expected behaviour, useful if multiple clients are being used by a single person.
+     *
+     * @param \Illuminate\Http\Request
+     * @return \Illuminate\Http\Response
      */
     public function logout(Request $request)
     {
@@ -91,7 +101,7 @@ class AuthController extends Controller
         $request->user()->currentAccessToken()->delete();
         return response()->json([
             'message' => 'Successful logout.',
-        ]);
+        ], 200);
     }
 
     public function me(Request $request)

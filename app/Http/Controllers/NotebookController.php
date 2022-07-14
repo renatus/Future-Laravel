@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Notebook;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
+use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Notebook-related functionality
@@ -14,13 +18,44 @@ use Illuminate\Support\Facades\Auth;
 class NotebookController extends Controller
 {
     /**
+     * Resize and save image, if present
+     *
+     * @param mixed $request            User request
+     * @param string $entryUuid         Entry UUID
+     * @return null|string              Relative path to saved file
+     */
+    public function saveFile($request, $entryUuid)
+    {
+        if ($request->hasFile('picture')) {
+            $image = $request->file('picture');
+            // Relative path to saved file for DB
+            $fileDbPath = 'images/' . date("Y") . '/' . date("m") . '/'
+                . $entryUuid . '.' . $image->extension();
+            // Relative path to actually save file
+            $fileFsPath = public_path('storage/' . $fileDbPath);
+            $img = Image::make($image->path());
+            // Resize image, preserving aspect ratio, and without upscaling
+            $img->resize(200, 200, function ($const) {
+                $const->aspectRatio();
+                $const->upsize();
+            })->save($fileFsPath);
+            return $fileDbPath;
+        }
+        return null;
+    }
+
+    /**
      * Add Notebook entry
+     *
+     * @param \Illuminate\Http\Request
+     * @return \Illuminate\Http\Response
      */
     public function add(Request $request)
     {
         // Add optional data (if missing) not to get an error on entity creation
         $request->mergeIfMissing(['birthday' => null]);
         $request->mergeIfMissing(['company' => null]);
+        // User can generate entry UUID on their own, if not, generate it
         $request->mergeIfMissing(['id' => Str::orderedUuid()->toString()]);
 
         // Validate client input
@@ -31,20 +66,14 @@ class NotebookController extends Controller
             'company' => 'nullable|string|max:255',
             'phone' => 'required|string|min:10|max:18',
             'email' => 'required|email:rfc,dns|unique:notebooks',
-            // Use date format YYYY-MM-DD
             'birthday' => 'nullable|date_format:Y-m-d',
-            'picture' => 'nullable|mimes:jpeg,jpg,png,gif,svg',
+            'picture' => 'nullable|mimes:jpeg,jpg,png,gif,svg|max:15000',
         ]);
 
-        // Save file, if present
-        $picPath = null;
-        if ($request->hasFile('picture')) {
-            $folderPath = 'images/' . date("Y") . '/' . date("m");
-            $picPath = $validatedData['picture']->store($folderPath, 'public');
-        }
+        $fileDbPath = NotebookController::saveFile($request, $validatedData['id']);
 
         // Create new Notebook entry
-        Notebook::create([
+        $notebook = Notebook::create([
             'id' => $validatedData['id'],
             'creator_uuid' => Auth::user()->id,
             'name' => $validatedData['name'],
@@ -52,11 +81,207 @@ class NotebookController extends Controller
             'phone' => $validatedData['phone'],
             'email' => $validatedData['email'],
             'birthday' => $validatedData['birthday'],
-            'picture' => $picPath,
+            'picture' => $fileDbPath,
         ]);
 
         return response()->json([
+            'id' => $notebook['id'],
+            'updated_at' => $notebook['updated_at'],
             'message' => 'Entry added.',
         ], 201);
+    }
+
+    /**
+     * Edit specified Notebook entry
+     *
+     * Works like 'patch', not 'put'. I.E. only explicitely mentioned fields will be updated.
+     * Values of absent fields wouldn't be altered.
+     * If field value equals 'null', we'll make it empty in DB.
+     *
+     * @param \Illuminate\Http\Request
+     * @param  string  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        // If URL argument is not a valid UUID
+        if (!Str::isUuid($id)) {
+            return response()->json([
+                'message' => 'There should be a valid UUID in a URL.',
+            ], 400);
+        }
+
+        $notebook = Notebook::find($id);
+
+        // If there are no entries with this UUID
+        if (!$notebook) {
+            return response()->json([
+                'message' => 'No such entry.',
+            ], 404);
+        }
+
+        // If authenticated user is NOT one who've created entry
+        if (Auth::user()->id !== $notebook['creator_uuid']) {
+            return response()->json([
+                'message' => 'You are not allowed to update this entry.',
+            ], 403);
+        }
+
+        // Add existing data (if missing) not to get an error on entity editing
+        // 'null' values wouldn't be altered
+        $request->mergeIfMissing(['name' => $notebook['name']]);
+        $request->mergeIfMissing(['company' => $notebook['company']]);
+        $request->mergeIfMissing(['phone' => $notebook['phone']]);
+        $request->mergeIfMissing(['email' => $notebook['email']]);
+        $request->mergeIfMissing(['birthday' => $notebook['birthday']]);
+
+        // Validate client input
+        // If client sent wrong data, adequate response is being generated by Laravel
+        $validatedData = $request->validate([
+            // Should get ISO 8601 datetime, like 2022-07-12T22:16:58.000000Z
+            'updated_at' => 'required|date',
+            'name' => 'required|string|max:255',
+            'company' => 'nullable|string|max:255',
+            'phone' => 'required|string|min:10|max:18',
+            'email' => 'required|email:rfc,dns',
+            'birthday' => 'nullable|date_format:Y-m-d',
+            'picture' => 'nullable|mimes:jpeg,jpg,png,gif,svg|max:15000',
+        ]);
+
+        $updatedAtRequest = new Carbon($validatedData['updated_at']);
+        // If DB-loaded entry and user-provided entry were last updated at different moments
+        if ($updatedAtRequest != $notebook['updated_at']) {
+            return response()->json([
+                'message' => 'Entry was already modified by someone else. Please, work with updated version.',
+            ], 409);
+        }
+
+        $fileDbPath = $notebook['picture'];
+        // If user have sent a new file
+        if ($request->hasFile('picture')) {
+            if ($notebook['picture'] && Storage::exists($notebook['picture'])) {
+                // Delete existing file
+                Storage::delete($notebook['picture']);
+            }
+            $fileDbPath = NotebookController::saveFile($request, $id);
+        } elseif (
+            array_key_exists('picture', $validatedData) &&
+            !$validatedData['picture'] &&
+            $notebook['picture'] &&
+            Storage::exists($notebook['picture'])
+        ) {
+            // If request has 'picture' key with 'null' value, but not missing
+            // And there is entry-associated file on a server side
+            // Delete existing file
+            Storage::delete($notebook['picture']);
+            $fileDbPath = null;
+        }
+
+        // Update existing Notebook entry
+        $notebook->update([
+            'name' => $validatedData['name'],
+            'company' => $validatedData['company'],
+            'phone' => $validatedData['phone'],
+            'email' => $validatedData['email'],
+            'birthday' => $validatedData['birthday'],
+            'picture' => $fileDbPath,
+        ]);
+
+        // This responce would be given even if user has sent us no new data,
+        // so entry wasn't in fact modified.
+        // That's tolerable - client and server data are still synced.
+        return response()->json([
+            'id' => $notebook['id'],
+            'updated_at' => $notebook['updated_at'],
+            'message' => 'Entry updated.',
+        ], 200);
+    }
+
+    /**
+     * Delete specified Notebook entry
+     *
+     * @param  string  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        // If URL argument is not a valid UUID
+        if (!Str::isUuid($id)) {
+            return response()->json([
+                'message' => 'There should be a valid UUID in a URL.',
+            ], 400);
+        }
+
+        $notebook = Notebook::find($id);
+        // If there are no entries with this UUID
+        if (!$notebook) {
+            return response()->json([
+                'message' => 'No such entry.',
+            ], 404);
+        }
+
+        // If authenticated user is NOT one who've created entry
+        if (Auth::user()->id != $notebook['creator_uuid']) {
+            return response()->json([
+                'message' => 'You are not allowed to delete this entry.',
+            ], 403);
+        }
+
+        // If there is an entry-associated file
+        if ($notebook['picture'] && Storage::exists($notebook['picture'])) {
+            Storage::delete($notebook['picture']);
+        }
+
+        // Delete entry
+        Notebook::destroy($id);
+
+        return response()->json([
+            'id' => $notebook['id'],
+            'message' => 'Entry deleted.',
+        ], 410);
+    }
+
+    /**
+     * Display specified Notebook entry
+     *
+     * @param  string  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        // If URL argument is not a valid UUID
+        if (!Str::isUuid($id)) {
+            return response()->json([
+                'message' => 'There should be a valid UUID in a URL.',
+            ], 400);
+        }
+
+        $notebook = Notebook::find($id);
+        // If there are no entries with this UUID
+        if (!$notebook) {
+            return response()->json([
+                'message' => 'No such entry.',
+            ], 404);
+        }
+
+        $fileUrl = null;
+        // If there is entry-associated picture
+        if ($notebook['picture']) {
+            $fileUrl = Storage::url($notebook['picture']);
+        }
+
+        // Return entry's JSON representation
+        return response()->json([
+            'id' => $notebook['id'],
+            'creator_uuid' => $notebook['creator_uuid'],
+            'name' => $notebook['name'],
+            'company' => $notebook['company'],
+            'phone' => $notebook['phone'],
+            'email' => $notebook['email'],
+            'birthday' => $notebook['birthday'],
+            'picture' => $fileUrl,
+            'created_at' => $notebook['created_at'],
+            'updated_at' => $notebook['updated_at'],
+        ], 200);
     }
 }
