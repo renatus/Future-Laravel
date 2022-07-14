@@ -3,12 +3,10 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
-use App\Models\User;
 use App\Models\Notebook;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\File;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 
@@ -28,7 +26,7 @@ class NotebookController extends Controller
     {
         if ($request->hasFile('picture')) {
             $image = $request->file('picture');
-            // Relative path to saved file for DB
+            // Relative path (to store in DB) to file being saved
             $fileDbPath = 'images/' . date("Y") . '/' . date("m") . '/'
                 . $entryUuid . '.' . $image->extension();
             // Relative path to actually save file
@@ -99,7 +97,7 @@ class NotebookController extends Controller
      * If field value equals 'null', we'll make it empty in DB.
      *
      * @param \Illuminate\Http\Request
-     * @param  string  $id
+     * @param  string  $id                   UUID
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -164,7 +162,7 @@ class NotebookController extends Controller
                 Storage::delete($notebook['picture']);
             }
             $fileDbPath = NotebookController::saveFile($request, $id);
-        // Leave this line PSR-2-compliant
+            // Leave this line PSR-2-compliant
         } elseif (array_key_exists('picture', $validatedData) &&
             !$validatedData['picture'] &&
             $notebook['picture'] &&
@@ -245,7 +243,6 @@ class NotebookController extends Controller
      * Display specified Notebook entry
      *
      * @param  string  $id
-     * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
@@ -264,24 +261,26 @@ class NotebookController extends Controller
             ], 404);
         }
 
-        $fileUrl = null;
-        // If there is entry-associated picture
-        if ($notebook['picture']) {
-            $fileUrl = Storage::url($notebook['picture']);
+        return $notebook;
+    }
+
+    /**
+     * Display all Notebook entries, paginated
+     *
+     * User may specify, how much results per page they would prefer, within certain range.
+     * Range and default value are being set at .env file.
+     */
+    public function index(Request $request)
+    {
+        $perPage = $_ENV['FUTURE_PAGINATION_DEF'];
+        // Leave this line PSR-2-compliant
+        if (is_int(intval($request['per_page'])) &&
+            $_ENV['FUTURE_PAGINATION_MIN'] <= $request['per_page'] &&
+            $_ENV['FUTURE_PAGINATION_MAX'] >= $request['per_page']
+        ) {
+            $perPage = $request['per_page'];
         }
 
-        // Return entry's JSON representation
-        return response()->json([
-            'id' => $notebook['id'],
-            'creator_uuid' => $notebook['creator_uuid'],
-            'name' => $notebook['name'],
-            'company' => $notebook['company'],
-            'phone' => $notebook['phone'],
-            'email' => $notebook['email'],
-            'birthday' => $notebook['birthday'],
-            'picture' => $fileUrl,
-            'created_at' => $notebook['created_at'],
-            'updated_at' => $notebook['updated_at'],
-        ], 200);
+        return Notebook::cursorPaginate($perPage);
     }
 }

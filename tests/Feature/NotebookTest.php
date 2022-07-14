@@ -84,7 +84,7 @@ class NotebookTest extends TestCase
         // Create auth token for that user
         $token = $user->createToken('auth_token');
         $faker = Faker\Factory::create();
-        // Editing pseudo-request
+        // Entry-editing pseudo-request
         $response = $this->withHeaders([
             'X-Requested-With' => 'XMLHttpRequest',
             'Accept' => 'application/json',
@@ -163,5 +163,24 @@ class NotebookTest extends TestCase
         ])->get('/api/v1/notebook/' . $notebook['id']);
 
         $response->assertJsonFragment(['created_at' => $notebook['created_at']]);
+    }
+
+    /**
+     * Test all Notebook entries listing, paginated
+     *
+     * @return void
+     */
+    public function testNotebooksCanBeListed()
+    {
+        // Create and save test Notebooks to DB
+        Notebook::factory()->count(15)->create();
+        // Pseudo-request to get entry
+        $response = $this->withHeaders([
+            'X-Requested-With' => 'XMLHttpRequest',
+            'Accept' => 'application/json',
+        ])->get('/api/v1/notebook');
+
+        // There should be as many entries at page, as set at .env file
+        $response->assertJsonFragment(['per_page' => intval($_ENV['FUTURE_PAGINATION_DEF'])]);
     }
 }
