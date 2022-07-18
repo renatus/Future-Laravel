@@ -108,8 +108,8 @@ blocks:
           - createdb -U postgres -h localhost $DB_NAME
           - psql -h localhost -U postgres -c "\l" | grep $DB_NAME
           - sem-service status postgres
-          - psql -U postgres -h localhost -c "CREATE USER future WITH PASSWORD 'password';"
-          - psql -U postgres -h localhost -c "ALTER USER future WITH SUPERUSER;"
+          - psql -U postgres -h localhost -c "CREATE USER future_test WITH PASSWORD 'DsQWE429JkLCdccVb23F';"
+          - psql -U postgres -h localhost -c "ALTER USER future_test WITH SUPERUSER;"
           - php artisan migrate --env=testing
           # Run unit and feature tests from the phpunit binary in vendor folder
           - ./vendor/bin/phpunit
