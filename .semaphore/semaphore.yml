@@ -84,11 +84,11 @@ blocks:
     task:
       env_vars:
         - name: DB_NAME
-          value: "testing"
+          value: "future_test"
         - name: DB_UNAME
-          value: "future"
+          value: "future_test"
         - name: DB_UPASS
-          value: "password"    
+          value: "DsQWE429JkLCdccVb23F"    
       jobs:
       - name: phpunit
         commands:
