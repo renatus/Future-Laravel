@@ -1753,3 +1753,17 @@ RUN apt-get clean && \
 
 # Set default work directory
 WORKDIR /var/www
+
+#
+#--------------------------------------------------------------------------
+# Prepare Laravel app to run
+#--------------------------------------------------------------------------
+#
+
+# Copy script file to container from FS
+COPY ./startup.sh /tmp
+# Make sure that script file belongs to laradock and executable
+RUN chown -R laradock:laradock /tmp/startup.sh 
+RUN chmod -R 755 /tmp/startup.sh
+# Run script file on each container startup
+CMD ["/bin/bash", "/tmp/startup.sh"]

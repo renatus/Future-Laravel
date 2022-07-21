@@ -201,6 +201,9 @@ services:
         - backend
       links:
         - docker-in-docker
+      depends_on:
+        postgres:
+          condition: service_healthy
 
 ### PHP-FPM ##############################################
     php-fpm:
@@ -621,6 +624,11 @@ services:
         - POSTGRES_CONFLUENCE_PASSWORD=${CONFLUENCE_POSTGRES_PASSWORD}
       networks:
         - backend
+      healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U postgres"]
+        interval: 5s
+        timeout: 5s
+        retries: 10
 
 ### PostgreSQL PostGis ###################################
     postgres-postgis:
