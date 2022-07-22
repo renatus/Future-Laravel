@@ -17,9 +17,10 @@ customfilesfolder="storage"     #x
 
 cd $newsitefolder/
 
-#----
+# Install dependencies
+composer install
+
 #Permissions for files folder
-#----
 find . -type d -name $customfilesfolder -exec chmod ug=rwx,o=rwx '{}' \;
 find . -name $customfilesfolder -type d -exec find '{}' -type f \; | while read FILE; do chmod ug=rwx,o=rwx "$FILE"; done
 find . -name $customfilesfolder -type d -exec find '{}' -type d \; | while read DIR; do chmod ug=rwx,o=rwx "$DIR"; done
@@ -29,6 +30,8 @@ find . -name $customfilesfolder -type d -exec find '{}' -type d \; | while read 
 # So it's safe to invoke 'migrate' command
 php artisan migrate
 php artisan migrate --env testing
+# Create symlink from 'public/storage' to 'storage/app/public'
+php artisan storage:link
 
 # Ugly hack to make container run after commands in script file were executed
 tail -f /dev/null
