@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use App\Models\Notebook;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Auth;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
@@ -27,10 +28,15 @@ class NotebookController extends Controller
         if ($request->hasFile('picture')) {
             $image = $request->file('picture');
             // Relative path (to store in DB) to file being saved
-            $fileDbPath = 'images/' . date("Y") . '/' . date("m") . '/'
-                . $entryUuid . '.' . $image->extension();
+            $folderDbPath = 'images/' . date("Y") . '/' . date("m");
+            $fileDbPath = $folderDbPath . '/' . $entryUuid . '.' . $image->extension();
             // Relative path to actually save file
+            $folderFsPath = public_path('storage/' . $folderDbPath);
             $fileFsPath = public_path('storage/' . $fileDbPath);
+            // Create subfolder, if not exists
+            if (!File::isDirectory($folderFsPath)) {
+                File::makeDirectory($folderFsPath, 0777, true, true);
+            }
             $img = Image::make($image->path());
             // Resize image, preserving aspect ratio, and without upscaling
             $img->resize(200, 200, function ($const) {
