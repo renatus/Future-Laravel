@@ -3,31 +3,44 @@
 #--------------------------------------------------------------------------
 # Prepare Laravel app to run
 #
-# Would be better to put this file to separate container, and to communicate
+# Would be better to put this file into separate container, and to communicate
 # with 'workspace' container from there.
 # That way there'll be no need to use 'tail' hack to leave 'workspace' running,
 # and user will be able to decide, if s/he needs to run these commands on a
 # given container startup, or not.
 #--------------------------------------------------------------------------
 
-#Folder, where we have files of a site
+# Folder, where we have files of a site
 newsitefolder="/var/www"     #x
-#Files folder, specific for a site
+# Files folder name, specific for a site
 customfilesfolder="storage"     #x
+# 'public' subfolder location
+custompubpath="/var/www/storage/app"     #x
+# 'public' subfolder name
+custompubfolder="public"     #x
 
 cd $newsitefolder/
 
 # Install dependencies
 composer install
 
-#Permissions for files folder
+# Permissions for files folder
+# Even 'rwxrwxrw' were not enough for logs
+# The stream or file \"/var/www/storage/logs/laravel.log\" could not be opened in append mode: Failed to open stream: Permission denied
 find . -type d -name $customfilesfolder -exec chmod ug=rwx,o=rwx '{}' \;
 find . -name $customfilesfolder -type d -exec find '{}' -type f \; | while read FILE; do chmod ug=rwx,o=rwx "$FILE"; done
 find . -name $customfilesfolder -type d -exec find '{}' -type d \; | while read DIR; do chmod ug=rwx,o=rwx "$DIR"; done
 
+# Permissions for 'public' subfolder
+cd $custompubpath/
+find . -type d -name $custompubfolder -exec chmod ug=rwx,o=rw '{}' \;
+find . -name $custompubfolder -type d -exec find '{}' -type f \; | while read FILE; do chmod ug=rwx,o=rw "$FILE"; done
+find . -name $custompubfolder -type d -exec find '{}' -type d \; | while read DIR; do chmod ug=rwx,o=rw "$DIR"; done
+
 # Create DB structure
 # 'Workspace' container starts only after Postgres DB (not just it's container) is up
 # So it's safe to invoke 'migrate' command
+cd $newsitefolder/
 php artisan migrate
 php artisan migrate --env testing
 # Create symlink from 'public/storage' to 'storage/app/public'
