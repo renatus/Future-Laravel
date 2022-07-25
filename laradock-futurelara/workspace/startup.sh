@@ -11,13 +11,9 @@
 #--------------------------------------------------------------------------
 
 # Folder, where we have files of a site
-newsitefolder="/var/www"     #x
+newsitefolder="/var/www"        #x
 # Files folder name, specific for a site
 customfilesfolder="storage"     #x
-# 'public' subfolder location
-custompubpath="/var/www/storage/app"     #x
-# 'public' subfolder name
-custompubfolder="public"     #x
 
 cd $newsitefolder/
 
@@ -25,22 +21,15 @@ cd $newsitefolder/
 composer install
 
 # Permissions for files folder
-# Even 'rwxrwxrw' were not enough for logs
+# Even 'rwxrwxrw' were not enough for logs and app subfolders
 # The stream or file \"/var/www/storage/logs/laravel.log\" could not be opened in append mode: Failed to open stream: Permission denied
 find . -type d -name $customfilesfolder -exec chmod ug=rwx,o=rwx '{}' \;
 find . -name $customfilesfolder -type d -exec find '{}' -type f \; | while read FILE; do chmod ug=rwx,o=rwx "$FILE"; done
 find . -name $customfilesfolder -type d -exec find '{}' -type d \; | while read DIR; do chmod ug=rwx,o=rwx "$DIR"; done
 
-# Permissions for 'public' subfolder
-cd $custompubpath/
-find . -type d -name $custompubfolder -exec chmod ug=rwx,o=rw '{}' \;
-find . -name $custompubfolder -type d -exec find '{}' -type f \; | while read FILE; do chmod ug=rwx,o=rw "$FILE"; done
-find . -name $custompubfolder -type d -exec find '{}' -type d \; | while read DIR; do chmod ug=rwx,o=rw "$DIR"; done
-
 # Create DB structure
 # 'Workspace' container starts only after Postgres DB (not just it's container) is up
 # So it's safe to invoke 'migrate' command
-cd $newsitefolder/
 php artisan migrate
 php artisan migrate --env testing
 # Create symlink from 'public/storage' to 'storage/app/public'
