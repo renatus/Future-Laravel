@@ -1,8 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\NotebookController;
+use App\Http\Controllers\V1\User\AddUserController;
+use App\Http\Controllers\V1\User\LoginUserController;
+use App\Http\Controllers\V1\User\LogoutUserController;
+use App\Http\Controllers\V1\Notebook\AddNotebookController;
+use App\Http\Controllers\V1\Notebook\DelNotebookController;
+use App\Http\Controllers\V1\Notebook\EditNotebookController;
+use App\Http\Controllers\V1\Notebook\ShowNotebookController;
+use App\Http\Controllers\V1\Notebook\ShowNotebooksController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,31 +21,31 @@ use App\Http\Controllers\NotebookController;
 |
 */
 
-//Public routes
+//Public V1 routes
 Route::group([
     'prefix' => 'v1'
 ], function () {
     // Add user
-    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/register', AddUserController::class);
     // Log user in
-    Route::post('/login', [AuthController::class, 'login']);
-    // Get particular entry
-    Route::get('/notebook/{id}', [NotebookController::class, 'show']);
-    // Get all entries
-    Route::get('/notebook', [NotebookController::class, 'index']);
+    Route::post('/login', LoginUserController::class);
+    // Display particular entry
+    Route::get('/notebook/{id}', ShowNotebookController::class);
+    // Display all entries
+    Route::get('/notebook', ShowNotebooksController::class);
 });
 
-//Protected routes
+//Protected V1 routes
 Route::group([
     'prefix' => 'v1',
     'middleware' => ['auth:sanctum']
 ], function () {
     // Modify entry
-    Route::post('/notebook/{id}', [NotebookController::class, 'update']);
+    Route::post('/notebook/{id}', EditNotebookController::class);
     // Add entry
-    Route::post('/notebook', [NotebookController::class, 'add']);
+    Route::post('/notebook', AddNotebookController::class);
     // Delete entry
-    Route::delete('/notebook/{id}', [NotebookController::class, 'destroy']);
+    Route::delete('/notebook/{id}', DelNotebookController::class);
     // Log user out
-    Route::get('/logout', [AuthController::class, 'logout']);
+    Route::get('/logout', LogoutUserController::class);
 });

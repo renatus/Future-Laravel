@@ -1,0 +1,1001 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Future API OpenApi Documentation",
+        "description": "Future API OpenApi description",
+        "license": {
+            "name": "GNU General Public License v3.0",
+            "url": "https://www.gnu.org/licenses/gpl-3.0.en.html"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost/api/v1",
+            "description": "Sandbox server (uses test data)"
+        }
+    ],
+    "paths": {
+        "/notebook": {
+            "get": {
+                "tags": [
+                    "Notebook"
+                ],
+                "summary": "Get list of notebooks",
+                "description": "Returns list of notebooks",
+                "operationId": "getNotebooksList",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/X-Requested-With"
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Desired number of entries per page, between 3 and 100",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "maximum": 100,
+                            "minimum": 3,
+                            "example": "25"
+                        }
+                    },
+                    {
+                        "name": "cursor",
+                        "in": "query",
+                        "description": "Cursor for cursor pagination",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "eyJub3RlYm9va3MuaWQiOiI5NmUxY2I4YS1jMzVmLTRkZjAtOWI3Ni02MjlmNDNjZTFkNDUiLCJfcG9pbnRzVG9OZXh0SXRlbXMiOnRydWV9"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetNotebooks200"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/405"
+                    },
+                    "429": {
+                        "$ref": "#/components/responses/429"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Notebook"
+                ],
+                "summary": "Add single notebook",
+                "description": "Adds single notebook.",
+                "operationId": "addNotebookEntry",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/X-Requested-With"
+                    }
+                ],
+                "requestBody": {
+                    "$ref": "#/components/requestBodies/addNotebookRequest"
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful operation.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AddNotebook201"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/401"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/405"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/422"
+                    },
+                    "429": {
+                        "$ref": "#/components/responses/429"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/notebook/{uuid}": {
+            "get": {
+                "tags": [
+                    "Notebook"
+                ],
+                "summary": "Get single notebook",
+                "description": "Returns single notebook",
+                "operationId": "getNotebookEntry",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/X-Requested-With"
+                    },
+                    {
+                        "$ref": "#/components/parameters/uuid"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetNotebook200"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/400"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/405"
+                    },
+                    "429": {
+                        "$ref": "#/components/responses/429"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Notebook"
+                ],
+                "summary": "Modify single notebook",
+                "description": "Modifies single notebook. Send only those data you need to change.\n     *      If you need to nullify given field, send 'null' value.",
+                "operationId": "modNotebookEntry",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/X-Requested-With"
+                    },
+                    {
+                        "$ref": "#/components/parameters/uuid"
+                    }
+                ],
+                "requestBody": {
+                    "$ref": "#/components/requestBodies/modNotebookRequest"
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ModNotebook200"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/400"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/401"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/403"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/405"
+                    },
+                    "409": {
+                        "$ref": "#/components/responses/409"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/422"
+                    },
+                    "429": {
+                        "$ref": "#/components/responses/429"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Notebook"
+                ],
+                "summary": "Delete single notebook",
+                "description": "Deletes single notebook",
+                "operationId": "delNotebookEntry",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/X-Requested-With"
+                    },
+                    {
+                        "$ref": "#/components/parameters/uuid"
+                    }
+                ],
+                "responses": {
+                    "410": {
+                        "description": "Successful deletion.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DelNotebook410"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/400"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/401"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/403"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/405"
+                    },
+                    "429": {
+                        "$ref": "#/components/responses/429"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/register": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Add single user",
+                "description": "Adds single user.",
+                "operationId": "addUserEntry",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/X-Requested-With"
+                    }
+                ],
+                "requestBody": {
+                    "$ref": "#/components/requestBodies/addUserRequest"
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful operation.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AddUser201"
+                                }
+                            }
+                        }
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/405"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/422"
+                    },
+                    "429": {
+                        "$ref": "#/components/responses/429"
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Login user",
+                "description": "Logs user in.",
+                "operationId": "loginUser",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/X-Requested-With"
+                    }
+                ],
+                "requestBody": {
+                    "$ref": "#/components/requestBodies/loginUserRequest"
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LoginUser200"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/401"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/405"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/422"
+                    },
+                    "429": {
+                        "$ref": "#/components/responses/429"
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Logout user",
+                "description": "Logs user out.",
+                "operationId": "logoutUser",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/X-Requested-With"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LogoutUser200"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/401"
+                    },
+                    "405": {
+                        "$ref": "#/components/responses/405"
+                    },
+                    "429": {
+                        "$ref": "#/components/responses/429"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "EntryUuid": {
+                "description": "Entry UUID",
+                "type": "string",
+                "format": "uuid",
+                "maxLength": 36,
+                "minLength": 36,
+                "example": "96e1cb8a-c35f-4df0-9b76-629f43ce1d45"
+            },
+            "SrvCreatedAt": {
+                "description": "When entry was created.",
+                "type": "string",
+                "format": "date-time",
+                "example": "2022-07-05T14:25:16.000000Z"
+            },
+            "SrvUpdatedAt": {
+                "description": "When entry was last updated at server's DB.",
+                "type": "string",
+                "format": "date-time",
+                "example": "2022-07-05T14:25:16.000000Z"
+            },
+            "Url": {
+                "description": "URL.",
+                "type": "string",
+                "format": "url",
+                "example": "http://localhost/storage/images/2022/07/971645cc-b76c-46c2-b32f-7b10b3d442cf.jpg",
+                "nullable": true
+            },
+            "Name": {
+                "description": "Person's name.",
+                "type": "string",
+                "maxLength": 255,
+                "example": "John Doe"
+            },
+            "Company": {
+                "description": "Company's name.",
+                "type": "string",
+                "maxLength": 255,
+                "example": "Microsoft",
+                "nullable": true
+            },
+            "Phone": {
+                "description": "Phone number.",
+                "type": "string",
+                "maxLength": 18,
+                "minLength": 10,
+                "example": "+79104153277"
+            },
+            "Email": {
+                "description": "Email address. Must be real and unique.",
+                "type": "string",
+                "format": "email",
+                "example": "test@test.com"
+            },
+            "Birthday": {
+                "description": "Birthday date.",
+                "type": "string",
+                "format": "date",
+                "example": "2021-12-31",
+                "nullable": true
+            },
+            "Picture": {
+                "description": "Person's avatar. jpeg, jpg, png, gif, svg file extensions are supported.",
+                "type": "array",
+                "items": {
+                    "type": "string",
+                    "format": "binary"
+                },
+                "maximum": 15000,
+                "maxItems": 1,
+                "nullable": true
+            },
+            "SrvMessage": {
+                "description": "Human-readable operation result.",
+                "type": "string",
+                "example": "Human-readable operation result description."
+            },
+            "Password": {
+                "description": "User's password.",
+                "type": "string",
+                "format": "password",
+                "minLength": 8,
+                "example": "NmmmSdWe428HyTTwerBBnmLop72W"
+            },
+            "AccessToken": {
+                "description": "User's access token.",
+                "type": "string",
+                "example": "1|wMjg0QkNDU4E0pDRIHftbrGpRMa3aF1YNHbZpMjP"
+            },
+            "AccessTokenType": {
+                "description": "Access token type.",
+                "type": "string",
+                "example": "Bearer"
+            },
+            "AddNotebook201": {
+                "description": "Notebook object has been added successfully",
+                "properties": {
+                    "id": {
+                        "$ref": "#/components/schemas/EntryUuid"
+                    },
+                    "updated_at": {
+                        "$ref": "#/components/schemas/SrvUpdatedAt"
+                    },
+                    "message": {
+                        "$ref": "#/components/schemas/SrvMessage"
+                    }
+                },
+                "type": "object"
+            },
+            "DelNotebook410": {
+                "description": "Notebook object has been deleted successfully",
+                "properties": {
+                    "id": {
+                        "$ref": "#/components/schemas/EntryUuid"
+                    },
+                    "message": {
+                        "$ref": "#/components/schemas/SrvMessage"
+                    }
+                },
+                "type": "object"
+            },
+            "ModNotebook200": {
+                "description": "Notebook object has been edited successfully",
+                "properties": {
+                    "id": {
+                        "$ref": "#/components/schemas/EntryUuid"
+                    },
+                    "updated_at": {
+                        "$ref": "#/components/schemas/SrvUpdatedAt"
+                    },
+                    "message": {
+                        "$ref": "#/components/schemas/SrvMessage"
+                    }
+                },
+                "type": "object"
+            },
+            "GetNotebook200": {
+                "description": "Notebook object has been returned successfully",
+                "properties": {
+                    "id": {
+                        "$ref": "#/components/schemas/EntryUuid"
+                    },
+                    "creator_uuid": {
+                        "$ref": "#/components/schemas/EntryUuid"
+                    },
+                    "name": {
+                        "$ref": "#/components/schemas/Name"
+                    },
+                    "company": {
+                        "$ref": "#/components/schemas/Company"
+                    },
+                    "phone": {
+                        "$ref": "#/components/schemas/Phone"
+                    },
+                    "email": {
+                        "$ref": "#/components/schemas/Email"
+                    },
+                    "birthday": {
+                        "$ref": "#/components/schemas/Birthday"
+                    },
+                    "created_at": {
+                        "$ref": "#/components/schemas/SrvCreatedAt"
+                    },
+                    "updated_at": {
+                        "$ref": "#/components/schemas/SrvUpdatedAt"
+                    },
+                    "picture_url": {
+                        "$ref": "#/components/schemas/Url"
+                    }
+                },
+                "type": "object"
+            },
+            "GetNotebooks200": {
+                "description": "Notebook object has been returned successfully",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "id": {
+                                    "$ref": "#/components/schemas/EntryUuid"
+                                },
+                                "creator_uuid": {
+                                    "$ref": "#/components/schemas/EntryUuid"
+                                },
+                                "name": {
+                                    "$ref": "#/components/schemas/Name"
+                                },
+                                "company": {
+                                    "$ref": "#/components/schemas/Company"
+                                },
+                                "phone": {
+                                    "$ref": "#/components/schemas/Phone"
+                                },
+                                "email": {
+                                    "$ref": "#/components/schemas/Email"
+                                },
+                                "birthday": {
+                                    "$ref": "#/components/schemas/Birthday"
+                                },
+                                "created_at": {
+                                    "$ref": "#/components/schemas/SrvCreatedAt"
+                                },
+                                "updated_at": {
+                                    "$ref": "#/components/schemas/SrvUpdatedAt"
+                                },
+                                "picture_url": {
+                                    "$ref": "#/components/schemas/Url"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "path": {
+                        "$ref": "#/components/schemas/GetNotebooksPath"
+                    },
+                    "per_page": {
+                        "$ref": "#/components/schemas/GetNotebooksPerPage"
+                    },
+                    "next_cursor": {
+                        "$ref": "#/components/schemas/GetNotebooksNCursor"
+                    },
+                    "next_page_url": {
+                        "$ref": "#/components/schemas/GetNotebooksNPage"
+                    },
+                    "prev_cursor": {
+                        "$ref": "#/components/schemas/GetNotebooksPCursor"
+                    },
+                    "prev_page_url": {
+                        "$ref": "#/components/schemas/GetNotebooksPPage"
+                    }
+                },
+                "type": "object"
+            },
+            "GetNotebooksPath": {
+                "description": "Endpoint URL.",
+                "type": "string",
+                "format": "url",
+                "example": "http://localhost/api/v1/notebook"
+            },
+            "GetNotebooksPerPage": {
+                "description": "Desired number of entries per page, between 3 and 100.",
+                "type": "integer",
+                "format": "int32",
+                "example": "25"
+            },
+            "GetNotebooksNCursor": {
+                "description": "Next cursor, for cursor pagination.",
+                "type": "string|null",
+                "example": "eyJub3RlYm9va3MuaWQiOiI5NzE4NTZhMi1mNTkzLTRiOGQtOTc5Yi05YzNmNWRmMzMyMjEiLCJfcG9pbnRzVG9OZXh0SXRlbXMiOnRydWV9"
+            },
+            "GetNotebooksNPage": {
+                "description": "Next page URL.",
+                "type": "string|null",
+                "format": "url",
+                "example": "http://localhost/api/v1/notebook?cursor=eyJub3RlYm9va3MuaWQiOiI5NzE4NTZhMi1mNTkzLTRiOGQtOTc5Yi05YzNmNWRmMzMyMjEiLCJfcG9pbnRzVG9OZXh0SXRlbXMiOnRydWV9"
+            },
+            "GetNotebooksPCursor": {
+                "description": "Previous cursor, for cursor pagination.",
+                "type": "string|null",
+                "example": "eyJub3RlYm9va3MuaWQiOiI5NzE4MWFmNC0wNzE1LTRmYTAtOTE2Zi1kNzdkYTdmYTg0ZTMiLCJfcG9pbnRzVG9OZXh0SXRlbXMiOmZhbHNlfQ"
+            },
+            "GetNotebooksPPage": {
+                "description": "Previous page URL.",
+                "type": "string|null",
+                "format": "url",
+                "example": "http://localhost/api/v1/notebook?cursor=eyJub3RlYm9va3MuaWQiOiI5NzE4MWFmNC0wNzE1LTRmYTAtOTE2Zi1kNzdkYTdmYTg0ZTMiLCJfcG9pbnRzVG9OZXh0SXRlbXMiOmZhbHNlfQ"
+            },
+            "AddUser201": {
+                "description": "User object has been added successfully",
+                "properties": {
+                    "id": {
+                        "$ref": "#/components/schemas/EntryUuid"
+                    },
+                    "access_token": {
+                        "$ref": "#/components/schemas/AccessToken"
+                    },
+                    "token_type": {
+                        "$ref": "#/components/schemas/AccessTokenType"
+                    },
+                    "message": {
+                        "$ref": "#/components/schemas/SrvMessage"
+                    }
+                },
+                "type": "object"
+            },
+            "LoginUser200": {
+                "description": "User has logged in successfully",
+                "properties": {
+                    "id": {
+                        "$ref": "#/components/schemas/EntryUuid"
+                    },
+                    "access_token": {
+                        "$ref": "#/components/schemas/AccessToken"
+                    },
+                    "token_type": {
+                        "$ref": "#/components/schemas/AccessTokenType"
+                    },
+                    "message": {
+                        "$ref": "#/components/schemas/SrvMessage"
+                    }
+                },
+                "type": "object"
+            },
+            "LogoutUser200": {
+                "description": "User has logged out successfully",
+                "properties": {
+                    "message": {
+                        "$ref": "#/components/schemas/SrvMessage"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "responses": {
+            "400": {
+                "description": "URL argument is not a valid UUID.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "$ref": "#/components/schemas/SrvMessage"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "401": {
+                "description": "User is not authenticated.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "$ref": "#/components/schemas/SrvMessage"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "403": {
+                "description": "User is not allowed to modify this entry.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "$ref": "#/components/schemas/SrvMessage"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "404": {
+                "description": "There are no entries with this UUID.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "$ref": "#/components/schemas/SrvMessage"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "405": {
+                "description": "Method not allowed for this endpoint.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "$ref": "#/components/schemas/SrvMessage"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "409": {
+                "description": "Entry was already modified by someone else. Please, work with updated version.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "$ref": "#/components/schemas/SrvMessage"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "422": {
+                "description": "Error in values sent to server. Check server reply for more info.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "$ref": "#/components/schemas/SrvMessage"
+                                },
+                                "errors": {
+                                    "properties": {
+                                        "fieldName": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string",
+                                                "example": "Human-readable explanation, what's wrong with provided field value."
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "429": {
+                "description": "Too Many Requests. Please, respect x-ratelimit-limit responce header value.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "$ref": "#/components/schemas/SrvMessage"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
+        "parameters": {
+            "X-Requested-With": {
+                "name": "X-Requested-With",
+                "in": "header",
+                "description": "Should be equal to XMLHttpRequest",
+                "required": true,
+                "schema": {
+                    "type": "string",
+                    "enum": [
+                        "XMLHttpRequest"
+                    ]
+                }
+            },
+            "uuid": {
+                "name": "uuid",
+                "in": "path",
+                "description": "UUID entry ID",
+                "required": true,
+                "schema": {
+                    "$ref": "#/components/schemas/EntryUuid"
+                }
+            }
+        },
+        "requestBodies": {
+            "addNotebookRequest": {
+                "description": "Notebook object to add to server",
+                "content": {
+                    "multipart/form-data": {
+                        "schema": {
+                            "required": [
+                                "name",
+                                "phone",
+                                "email"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "$ref": "#/components/schemas/EntryUuid"
+                                },
+                                "name": {
+                                    "$ref": "#/components/schemas/Name"
+                                },
+                                "company": {
+                                    "$ref": "#/components/schemas/Company"
+                                },
+                                "phone": {
+                                    "$ref": "#/components/schemas/Phone"
+                                },
+                                "email": {
+                                    "$ref": "#/components/schemas/Email"
+                                },
+                                "birthday": {
+                                    "$ref": "#/components/schemas/Birthday"
+                                },
+                                "picture": {
+                                    "$ref": "#/components/schemas/Picture"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "modNotebookRequest": {
+                "description": "Notebook object to edit at server",
+                "content": {
+                    "multipart/form-data": {
+                        "schema": {
+                            "required": [
+                                "updated_at"
+                            ],
+                            "properties": {
+                                "updated_at": {
+                                    "$ref": "#/components/schemas/SrvUpdatedAt"
+                                },
+                                "name": {
+                                    "$ref": "#/components/schemas/Name"
+                                },
+                                "company": {
+                                    "$ref": "#/components/schemas/Company"
+                                },
+                                "phone": {
+                                    "$ref": "#/components/schemas/Phone"
+                                },
+                                "email": {
+                                    "$ref": "#/components/schemas/Email"
+                                },
+                                "birthday": {
+                                    "$ref": "#/components/schemas/Birthday"
+                                },
+                                "picture": {
+                                    "$ref": "#/components/schemas/Picture"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "addUserRequest": {
+                "description": "User object to add to server",
+                "content": {
+                    "multipart/form-data": {
+                        "schema": {
+                            "required": [
+                                "name",
+                                "email",
+                                "password"
+                            ],
+                            "properties": {
+                                "name": {
+                                    "$ref": "#/components/schemas/Name"
+                                },
+                                "email": {
+                                    "$ref": "#/components/schemas/Email"
+                                },
+                                "password": {
+                                    "$ref": "#/components/schemas/Password"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "loginUserRequest": {
+                "description": "User credentials to log in to server",
+                "content": {
+                    "multipart/form-data": {
+                        "schema": {
+                            "required": [
+                                "email",
+                                "password"
+                            ],
+                            "properties": {
+                                "email": {
+                                    "$ref": "#/components/schemas/Email"
+                                },
+                                "password": {
+                                    "$ref": "#/components/schemas/Password"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "name": "bearerAuth",
+                "in": "header",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    }
+}
