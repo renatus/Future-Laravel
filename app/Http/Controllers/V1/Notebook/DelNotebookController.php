@@ -6,6 +6,7 @@ use App\Models\Notebook;
 use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 
 class DelNotebookController extends Controller
@@ -62,7 +63,7 @@ class DelNotebookController extends Controller
         }
 
         // If authenticated user is NOT one who've created entry
-        if (Auth::user()->id != $notebook['creator_uuid']) {
+        if (!Gate::allows('modify-notebook', $notebook)) {
             return response()->json([
                 'message' => 'You are not allowed to delete this entry.',
             ], 403);

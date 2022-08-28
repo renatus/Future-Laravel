@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\SaveFileController;
 
@@ -93,7 +94,7 @@ class EditNotebookController extends Controller
         }
 
         // If authenticated user is NOT one who've created entry
-        if (Auth::user()->id !== $notebook['creator_uuid']) {
+        if (!Gate::allows('modify-notebook', $notebook)) {
             return response()->json([
                 'message' => 'You are not allowed to update this entry.',
             ], 403);
