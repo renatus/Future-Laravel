@@ -37,6 +37,7 @@ class DelNotebookController extends Controller
      *      @OA\Response(response=404, ref="#/components/responses/404"),
      *      @OA\Response(response=405, ref="#/components/responses/405"),
      *      @OA\Response(response=429, ref="#/components/responses/429"),
+     *      @OA\Response(response=500, ref="#/components/responses/500"),
      * ),
      * @OA\Schema(
      *     schema="DelNotebook410",

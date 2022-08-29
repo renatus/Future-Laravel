@@ -67,6 +67,9 @@
                     },
                     "429": {
                         "$ref": "#/components/responses/429"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/500"
                     }
                 }
             },
@@ -107,6 +110,9 @@
                     },
                     "429": {
                         "$ref": "#/components/responses/429"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/500"
                     }
                 },
                 "security": [
@@ -154,6 +160,9 @@
                     },
                     "429": {
                         "$ref": "#/components/responses/429"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/500"
                     }
                 }
             },
@@ -209,6 +218,9 @@
                     },
                     "429": {
                         "$ref": "#/components/responses/429"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/500"
                     }
                 },
                 "security": [
@@ -260,6 +272,9 @@
                     },
                     "429": {
                         "$ref": "#/components/responses/429"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/500"
                     }
                 },
                 "security": [
@@ -304,6 +319,9 @@
                     },
                     "429": {
                         "$ref": "#/components/responses/429"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/500"
                     }
                 }
             }
@@ -346,6 +364,9 @@
                     },
                     "429": {
                         "$ref": "#/components/responses/429"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/500"
                     }
                 }
             }
@@ -382,6 +403,9 @@
                     },
                     "429": {
                         "$ref": "#/components/responses/429"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/500"
                     }
                 },
                 "security": [
@@ -827,6 +851,21 @@
             },
             "429": {
                 "description": "Too Many Requests. Please, respect x-ratelimit-limit responce header value.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "$ref": "#/components/schemas/SrvMessage"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "500": {
+                "description": "Internal Server Error. We'll try to fix it ASAP.",
                 "content": {
                     "application/json": {
                         "schema": {

@@ -32,6 +32,7 @@ class LogoutUserController extends Controller
      *      @OA\Response(response=401, ref="#/components/responses/401"),
      *      @OA\Response(response=405, ref="#/components/responses/405"),
      *      @OA\Response(response=429, ref="#/components/responses/429"),
+     *      @OA\Response(response=500, ref="#/components/responses/500"),
      * ),
      * @OA\Schema(
      *     schema="LogoutUser200",

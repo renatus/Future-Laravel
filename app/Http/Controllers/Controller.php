@@ -209,6 +209,13 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
  *         @OA\Property(property="message", ref="#/components/schemas/SrvMessage"),
  *     )
  * ),
+ * @OA\Response(
+ *     response=500,
+ *     description="Internal Server Error. We'll try to fix it ASAP.",
+ *     @OA\JsonContent(
+ *         @OA\Property(property="message", ref="#/components/schemas/SrvMessage"),
+ *     )
+ * ),
  */
 class Controller extends BaseController
 {
