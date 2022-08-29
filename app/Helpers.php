@@ -1,25 +1,30 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App;
 
 use Illuminate\Support\Facades\File;
 use Intervention\Image\Facades\Image;
 
-class SaveFileController extends Controller
+class Helpers
 {
     /**
-     * Resize and save image, if present
+     * Resize and save image, if present in request
      *
      * @param mixed $request            User request
      * @param string $entryUuid         Entry UUID
+     * @param int $sideLength           Max side length (in pixels) to resize image
      * @return null|string              Relative path to saved file
      */
-    public static function saveFile($request, $entryUuid)
+    public static function saveFile($request, $entryUuid, $sideLength = null)
     {
         if (!$request->hasFile('picture')) {
             return null;
         }
         $image = $request->file('picture');
+        // If max side length (in pixels) wasn't provided, use default
+        if (!isset($sideLength)) {
+            $sideLength = $_ENV['FUTURE_IMAGESIDE_DEF'];
+        }
         // Relative path (to store in DB) to file being saved
         $folderDbPath = 'images/' . date("Y") . '/' . date("m");
         $fileDbPath = $folderDbPath . '/' . $entryUuid . '.' . $image->extension();
@@ -31,9 +36,8 @@ class SaveFileController extends Controller
             File::makeDirectory($folderFsPath, 0777, true, true);
         }
         $img = Image::make($image->path());
-        // TODO: Get resized image size from .env variable
         // Resize image, preserving aspect ratio, and without upscaling
-        $img->resize(200, 200, function ($const) {
+        $img->resize($sideLength, $sideLength, function ($const) {
             $const->aspectRatio();
             $const->upsize();
         })->save($fileFsPath);

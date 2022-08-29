@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\V1\Notebook;
 
+use App\Helpers;
 use Carbon\Carbon;
 use App\Models\Notebook;
 use Illuminate\Support\Str;
@@ -10,7 +11,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
-use App\Http\Controllers\SaveFileController;
 
 class EditNotebookController extends Controller
 {
@@ -136,7 +136,7 @@ class EditNotebookController extends Controller
                 // Delete existing file
                 Storage::delete($notebook['picture']);
             }
-            $fileDbPath = SaveFileController::saveFile($request, $id);
+            $fileDbPath = Helpers::saveFile($request, $id);
             // Leave this line PSR-2-compliant
         } elseif (array_key_exists('picture', $validatedData) &&
             !$validatedData['picture'] &&
