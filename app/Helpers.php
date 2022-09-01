@@ -22,9 +22,7 @@ class Helpers
         }
         $image = $request->file('picture');
         // If max side length (in pixels) wasn't provided, use default
-        if (!isset($sideLength)) {
-            $sideLength = $_ENV['FUTURE_IMAGESIDE_DEF'];
-        }
+        $sideLength = $sideLength ?? $_ENV['FUTURE_IMAGESIDE_DEF'];
         // Relative path (to store in DB) to file being saved
         $folderDbPath = 'images/' . date("Y") . '/' . date("m");
         $fileDbPath = $folderDbPath . '/' . $entryUuid . '.' . $image->extension();
