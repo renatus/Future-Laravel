@@ -120,7 +120,7 @@ blocks:
         - name: security-checker
           commands:
             - checkout
-            # We pull latest symfony cli docker image
-            - docker pull symfonycorp/cli:latest
+            # We pull latest symfony-security-check docker image
+            - docker pull digitalist/symfony-security-check
             # And finally, run the check
-            - docker run --rm -v $(pwd):$(pwd) -w $(pwd) symfonycorp/cli check:security
+            - docker run -v $(pwd)/composer.lock:/tmp/composer.lock digitalist/symfony-security-check
