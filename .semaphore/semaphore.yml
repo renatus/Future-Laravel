@@ -113,14 +113,3 @@ blocks:
           - php artisan migrate --env=testing
           # Run unit and feature tests from the phpunit binary in vendor folder
           - ./vendor/bin/phpunit
-
-  - name: "Run Security Tests"
-    task:
-      jobs:
-        - name: security-checker
-          commands:
-            - checkout
-            # We pull latest symfony-security-check docker image
-            - docker pull digitalist/symfony-security-check
-            # And finally, run the check
-            - docker run -v $(pwd)/composer.lock:/tmp/composer.lock digitalist/symfony-security-check
