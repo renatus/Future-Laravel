@@ -25,7 +25,7 @@ class FileService
         $sideLength = $sideLength ?? $_ENV['FUTURE_IMAGESIDE_DEF'];
         // Relative path (to store in DB) to file being saved
         $folderDbPath = 'images/' . date("Y") . '/' . date("m");
-        $fileDbPath = $folderDbPath . '/' . $entryUuid . '.' . $image->extension();
+        $fileDbPath = $folderDbPath . '/' . $entryUuid . '-' . time() . '.' . $image->extension();
         // Relative path to actually save file
         $folderFsPath = public_path('storage/' . $folderDbPath);
         $fileFsPath = public_path('storage/' . $fileDbPath);
