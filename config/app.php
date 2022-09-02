@@ -183,6 +183,8 @@ return [
         Illuminate\View\ViewServiceProvider::class,
         // To make intervention/image Image::resize work
         Intervention\Image\ImageServiceProvider::class,
+        // To make barryvdh/laravel-ide-helper work
+        Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
 
         /*
          * Package Service Providers...
