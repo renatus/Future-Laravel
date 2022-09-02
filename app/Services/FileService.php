@@ -1,11 +1,11 @@
 <?php
 
-namespace App;
+namespace App\Services;
 
 use Illuminate\Support\Facades\File;
 use Intervention\Image\Facades\Image;
 
-class Helpers
+class FileService
 {
     /**
      * Resize and save image, if present in request
@@ -15,7 +15,7 @@ class Helpers
      * @param int $sideLength           Max side length (in pixels) to resize image
      * @return null|string              Relative path to saved file
      */
-    public static function saveFile($request, $entryUuid, $sideLength = null)
+    public static function save($request, $entryUuid, $sideLength = null)
     {
         if (!$request->hasFile('picture')) {
             return null;

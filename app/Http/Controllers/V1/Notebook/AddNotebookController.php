@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\V1\Notebook;
 
-use App\Helpers;
 use App\Models\Notebook;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Services\FileService;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
@@ -84,7 +84,7 @@ class AddNotebookController extends Controller
             'picture' => 'nullable|mimes:jpeg,jpg,png,gif,svg|max:15000',
         ]);
 
-        $fileDbPath = Helpers::saveFile($request, $validatedData['id']);
+        $fileDbPath = FileService::save($request, $validatedData['id']);
 
         // Create new Notebook entry
         $notebook = Notebook::create([
