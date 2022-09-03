@@ -57,7 +57,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
  *     type="string",
  *     format="url",
  *     nullable=true,
- *     example="http://localhost/storage/images/2022/07/971645cc-b76c-46c2-b32f-7b10b3d442cf.jpg",
+ *     example="http://localhost/storage/images/2022/07/971645cc-b76c-46c2-b32f-7b10b3d442cf-1662168048.jpg",
  *     description="URL.",
  * ),
  * @OA\Schema(

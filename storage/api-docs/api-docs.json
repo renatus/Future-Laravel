@@ -442,7 +442,7 @@
                 "description": "URL.",
                 "type": "string",
                 "format": "url",
-                "example": "http://localhost/storage/images/2022/07/971645cc-b76c-46c2-b32f-7b10b3d442cf.jpg",
+                "example": "http://localhost/storage/images/2022/07/971645cc-b76c-46c2-b32f-7b10b3d442cf-1662168048.jpg",
                 "nullable": true
             },
             "Name": {
@@ -520,6 +520,9 @@
                     "updated_at": {
                         "$ref": "#/components/schemas/SrvUpdatedAt"
                     },
+                    "picture_url": {
+                        "$ref": "#/components/schemas/Url"
+                    },
                     "message": {
                         "$ref": "#/components/schemas/SrvMessage"
                     }
@@ -546,6 +549,9 @@
                     },
                     "updated_at": {
                         "$ref": "#/components/schemas/SrvUpdatedAt"
+                    },
+                    "picture_url": {
+                        "$ref": "#/components/schemas/Url"
                     },
                     "message": {
                         "$ref": "#/components/schemas/SrvMessage"

@@ -59,6 +59,7 @@ class AddNotebookController extends Controller
      *     description="Notebook object has been added successfully",
      *     @OA\Property(property="id", ref="#/components/schemas/EntryUuid"),
      *     @OA\Property(property="updated_at", ref="#/components/schemas/SrvUpdatedAt"),
+     *     @OA\Property(property="picture_url", ref="#/components/schemas/Url"),
      *     @OA\Property(property="message", ref="#/components/schemas/SrvMessage"),
      * ),
      */
@@ -101,6 +102,7 @@ class AddNotebookController extends Controller
         return response()->json([
             'id' => $notebook['id'],
             'updated_at' => $notebook['updated_at'],
+            'picture_url' => $notebook['picture_url'],
             'message' => 'Entry added.',
         ], 201);
     }

@@ -72,6 +72,7 @@ class EditNotebookController extends Controller
      *     description="Notebook object has been edited successfully",
      *     @OA\Property(property="id", ref="#/components/schemas/EntryUuid"),
      *     @OA\Property(property="updated_at", ref="#/components/schemas/SrvUpdatedAt"),
+     *     @OA\Property(property="picture_url", ref="#/components/schemas/Url"),
      *     @OA\Property(property="message", ref="#/components/schemas/SrvMessage"),
      * ),
      */
@@ -166,6 +167,7 @@ class EditNotebookController extends Controller
         return response()->json([
             'id' => $notebook['id'],
             'updated_at' => $notebook['updated_at'],
+            'picture_url' => $notebook['picture_url'],
             'message' => 'Entry updated.',
         ], 200);
     }
