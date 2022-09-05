@@ -137,7 +137,7 @@ class EditNotebookController extends Controller
                 // Delete existing file
                 Storage::delete($notebook['picture']);
             }
-            $fileDbPath = FileService::save($request, $id);
+            $fileDbPath = FileService::requestImgSave($request, $id);
             // Leave this line PSR-2-compliant
         } elseif (array_key_exists('picture', $validatedData) &&
             !$validatedData['picture'] &&

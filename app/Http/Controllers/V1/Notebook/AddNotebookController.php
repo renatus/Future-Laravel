@@ -85,7 +85,7 @@ class AddNotebookController extends Controller
             'picture' => 'nullable|mimes:jpeg,jpg,png,gif,svg|max:15000',
         ]);
 
-        $fileDbPath = FileService::save($request, $validatedData['id']);
+        $fileDbPath = FileService::requestImgSave($request, $validatedData['id']);
 
         // Create new Notebook entry
         $notebook = Notebook::create([
