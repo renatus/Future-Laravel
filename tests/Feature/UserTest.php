@@ -33,6 +33,17 @@ class UserTest extends TestCase
             'password' => 'DfBBBnMMl23DwerT',
         ]);
 
+        // Check if there is corresponding User entry in DB
+        $this->assertDatabaseHas('users', [
+            'id' => $response['id'],
+        ]);
+
+        // Check if there is corresponding Access Token entry in DB
+        $this->assertDatabaseHas('personal_access_tokens', [
+            'tokenable_id' => $response['id'],
+        ]);
+
+        // Check if server response matches expected one
         // If account was created successfully, token of type "Bearer" is being returned
         $response->assertJsonFragment(['token_type' => 'Bearer']);
     }
@@ -55,6 +66,17 @@ class UserTest extends TestCase
             'password' => 'password',
         ]);
 
+        // Check if there is corresponding User entry in DB
+        $this->assertDatabaseHas('users', [
+            'id' => $response['id'],
+        ]);
+
+        // Check if there is corresponding Access Token entry in DB
+        $this->assertDatabaseHas('personal_access_tokens', [
+            'tokenable_id' => $response['id'],
+        ]);
+
+        // Check if server response matches expected one
         // If user logged in successfully, token of type "Bearer" is being returned
         $response->assertJsonFragment(['token_type' => 'Bearer']);
     }
@@ -77,6 +99,17 @@ class UserTest extends TestCase
             'Authorization' => 'Bearer ' . $token->plainTextToken,
         ])->get('/api/v1/logout');
 
+        // Check if there is corresponding User entry in DB
+        $this->assertDatabaseHas('users', [
+            'id' => $user['id'],
+        ]);
+
+        // Check if there are NO corresponding Access Token entries in DB
+        $this->assertDatabaseMissing('personal_access_tokens', [
+            'tokenable_id' => $user['id'],
+        ]);
+
+        // Check if server response matches expected one
         $response->assertJsonFragment(['message' => 'Successful logout.']);
     }
 }
