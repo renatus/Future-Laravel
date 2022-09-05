@@ -135,7 +135,9 @@ class EditNotebookController extends Controller
         if ($request->hasFile('picture')) {
             if ($notebook['picture'] && Storage::exists($notebook['picture'])) {
                 // Delete existing file
-                Storage::delete($notebook['picture']);
+                // TODO: check why Storage::delete doesn't work at SemaphoreCI VM
+                //Storage::delete($notebook['picture']);
+                unlink(FileService::getImgFsPath($notebook['picture']));
             }
             $fileDbPath = FileService::requestImgSave($request, $id);
             // Leave this line PSR-2-compliant
@@ -147,7 +149,9 @@ class EditNotebookController extends Controller
             // If request has 'picture' key with 'null' value, but not missing
             // And there is entry-associated file on a server side
             // Delete existing file
-            Storage::delete($notebook['picture']);
+            // TODO: check why Storage::delete doesn't work at SemaphoreCI VM
+            //Storage::delete($notebook['picture']);
+            unlink(FileService::getImgFsPath($notebook['picture']));
             $fileDbPath = null;
         }
 

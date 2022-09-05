@@ -4,6 +4,7 @@ namespace App\Http\Controllers\V1\Notebook;
 
 use App\Models\Notebook;
 use Illuminate\Support\Str;
+use App\Services\FileService;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
@@ -71,7 +72,9 @@ class DelNotebookController extends Controller
 
         // If there is an entry-associated file
         if ($notebook['picture'] && Storage::exists($notebook['picture'])) {
-            Storage::delete($notebook['picture']);
+            // TODO: check why Storage::delete doesn't work at SemaphoreCI VM
+            //Storage::delete($notebook['picture']);
+            unlink(FileService::getImgFsPath($notebook['picture']));
         }
 
         // Delete entry

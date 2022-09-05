@@ -168,7 +168,6 @@ class NotebookTest extends TestCase
             'updated_at' => $notebook['updated_at'],
         ]);
 
-        unlink(FileService::getImgFsPath($notebook['picture']));
         // Check if OLD entry-associated file is NOT in filesystem
         $this->assertFileDoesNotExist(FileService::getImgFsPath($notebook['picture']));
         // Check if NEW entry-associated file is actually in filesystem
