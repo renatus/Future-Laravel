@@ -86,7 +86,7 @@ class NotebookTest extends TestCase
         $notebook = Notebook::find($response['id']);
         $this->assertFileExists(FileService::getImgFsPath($notebook['picture']));
         // Delete test file from PROD FS
-        Storage::delete($notebook['picture']);
+        unlink(FileService::getImgFsPath($notebook['picture']));
 
         // Check if server response matches expected one
         $response->assertJsonFragment(['message' => 'Entry added.']);
@@ -125,7 +125,7 @@ class NotebookTest extends TestCase
         $notebook = Notebook::find($response['id']);
         $this->assertFileExists(FileService::getImgFsPath($notebook['picture']));
         // Delete test file from PROD FS
-        Storage::delete($notebook['picture']);
+        unlink(FileService::getImgFsPath($notebook['picture']));
 
         // Check if server response matches expected one
         $response->assertJsonFragment(['message' => 'Entry added.']);
@@ -174,7 +174,7 @@ class NotebookTest extends TestCase
         $notebookModified = Notebook::find($response['id']);
         $this->assertFileExists(FileService::getImgFsPath($notebookModified['picture']));
         // Delete test file from PROD FS
-        Storage::delete($notebookModified['picture']);
+        unlink(FileService::getImgFsPath($notebookModified['picture']));
 
         // Check if server response matches expected one
         $response->assertJsonFragment(['message' => 'Entry updated.']);

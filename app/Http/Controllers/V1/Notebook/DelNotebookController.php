@@ -71,7 +71,7 @@ class DelNotebookController extends Controller
         }
 
         // If there is an entry-associated file
-        if ($notebook['picture'] && Storage::exists($notebook['picture'])) {
+        if ($notebook['picture'] && file_exists(FileService::getImgFsPath($notebook['picture']))) {
             // TODO: check why Storage::delete doesn't work at SemaphoreCI VM
             //Storage::delete($notebook['picture']);
             unlink(FileService::getImgFsPath($notebook['picture']));

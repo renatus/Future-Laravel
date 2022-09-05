@@ -133,7 +133,7 @@ class EditNotebookController extends Controller
         $fileDbPath = $notebook['picture'];
         // If user have sent a new file
         if ($request->hasFile('picture')) {
-            if ($notebook['picture'] && Storage::exists($notebook['picture'])) {
+            if ($notebook['picture'] && file_exists(FileService::getImgFsPath($notebook['picture']))) {
                 // Delete existing file
                 // TODO: check why Storage::delete doesn't work at SemaphoreCI VM
                 //Storage::delete($notebook['picture']);
@@ -144,7 +144,7 @@ class EditNotebookController extends Controller
         } elseif (array_key_exists('picture', $validatedData) &&
             !$validatedData['picture'] &&
             $notebook['picture'] &&
-            Storage::exists($notebook['picture'])
+            file_exists(FileService::getImgFsPath($notebook['picture']))
         ) {
             // If request has 'picture' key with 'null' value, but not missing
             // And there is entry-associated file on a server side
