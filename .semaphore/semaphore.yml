@@ -56,6 +56,8 @@ blocks:
             - cp .env.testing.semaphoreci .env.testing
             # We need to generate an application key for Laravel to work.
             - php artisan key:generate
+            # We need to generate symlink to make public filesystem work.
+            - php artisan storage:link
 
   - name: "Run Code Analysis"
     task:
