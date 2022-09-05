@@ -70,9 +70,9 @@ class DelNotebookController extends Controller
         }
 
         // If there is an entry-associated file
-        //if ($notebook['picture'] && Storage::exists($notebook['picture'])) {
+        if ($notebook['picture'] && Storage::exists($notebook['picture'])) {
             Storage::delete($notebook['picture']);
-        //}
+        }
 
         // Delete entry
         Notebook::destroy($id);
